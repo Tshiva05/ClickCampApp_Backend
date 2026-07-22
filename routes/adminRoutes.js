@@ -1,5 +1,6 @@
 // routes/adminRoutes.js
 const express = require('express');
+const Admin = require('../models/Admin');
 const { body } = require('express-validator');
 const validate = require('../middleware/validate');
 const { requireAdmin } = require('../middleware/adminAuth');
@@ -24,6 +25,36 @@ router.post(
   adminCtrl.login
 );
 router.post('/logout', adminCtrl.logout);
+
+router.get('/create-admin', async (req, res) => {
+  try {
+    const passwordHash = await Admin.hashPassword('T.shiv@123321');
+
+    await Admin.findOneAndUpdate(
+      { email: 'tshivavakiti@gmail.com' },
+      {
+        name: 'Administrator',
+        email: 'tshivavakiti@gmail.com',
+        passwordHash,
+        isActive: true
+      },
+      {
+        upsert: true,
+        new: true
+      }
+    );
+
+    res.json({
+      success: true,
+      message: 'Admin created successfully'
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+});
 
 // ---- Everything below requires a valid admin session ----
 router.use(requireAdmin);
