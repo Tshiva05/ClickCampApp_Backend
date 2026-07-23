@@ -77,10 +77,11 @@ const submitViaReferral = asyncHandler(async (req, res) => {
   if (!referral) throw new ApiError(404, 'Referral link not found');
   if (!referral.offer || !isLive(referral.offer)) throw new ApiError(404, 'This offer is no longer active');
 
-  const { mobile, upi } = req.body;
+  const { name, mobile, upi } = req.body;
 
   const application = await Application.create({
     offer: referral.offer._id,
+    name,
     mobile,
     upi,
     referral: referral._id,
