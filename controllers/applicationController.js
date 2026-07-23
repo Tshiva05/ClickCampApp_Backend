@@ -30,7 +30,7 @@ async function uniqueReferralCode() {
   throw new ApiError(500, 'Could not generate a unique referral code, please retry');
 }
 
-// POST /api/offers/:slug/apply  { mobile, upi }
+// POST /api/offers/:slug/apply  { name , mobile, upi }
 // Direct submission (not via a friend's referral link). Creates the
 // Application, then auto-generates a shareable Referral for this
 // submitter at the offer's default (max) sharing reward.
@@ -38,10 +38,11 @@ const submitDirectApplication = asyncHandler(async (req, res) => {
   const offer = await Offer.findOne({ slug: req.params.slug });
   if (!offer || !isLive(offer)) throw new ApiError(404, 'Offer not found or no longer active');
 
-  const { mobile, upi } = req.body;
+  const { name, mobile, upi } = req.body;
 
   const application = await Application.create({
     offer: offer._id,
+    name,
     mobile,
     upi,
     rewardAmount: offer.rewardAmount
