@@ -15,16 +15,49 @@ const applicationSchema = new mongoose.Schema(
     offer: { type: mongoose.Schema.Types.ObjectId, ref: 'Offer', required: true },
 
     mobile: {
-      type: String,
-      required: true,
-      trim: true,
-      match: [/^[0-9]{10}$/, 'Mobile must be a 10-digit number']
-    },
-    upi: { type: String, required: true, trim: true, maxlength: 80 },
+  type: String,
+  required: true,
+  trim: true,
+  match: [/^[0-9]{10}$/, 'Mobile must be a 10-digit number']
+},
 
-    // Set only if this application came in through someone else's referral link.
-    referral: { type: mongoose.Schema.Types.ObjectId, ref: 'Referral', default: null },
+upi: {
+  type: String,
+  required: true,
+  trim: true,
+  maxlength: 80
+},
 
+name: {
+  type: String,
+  required: true,
+  trim: true
+},
+
+referrerReward: {
+  type: Number,
+  default: 0
+},
+
+friendReward: {
+  type: Number,
+  default: 0
+},
+
+generatedReferralCode: {
+  type: String,
+  default: null,
+  unique: true,
+  sparse: true
+},
+
+// Set only if this application came in through someone else's referral link.
+referral: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'Referral',
+  default: null
+},
+    
     // Snapshot of what this specific application is worth: offer.rewardAmount
     // for a direct/original submission, or referral.friendReward if referred.
     rewardAmount: { type: Number, required: true },
