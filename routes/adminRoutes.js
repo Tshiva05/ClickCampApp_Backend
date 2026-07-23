@@ -123,3 +123,4 @@ router.put('/settings', settingsCtrl.updateSettings);
 router.get('/analytics', adminCtrl.analytics);
 
 module.exports = router;
+    
