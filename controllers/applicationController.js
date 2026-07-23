@@ -48,31 +48,21 @@ const submitDirectApplication = asyncHandler(async (req, res) => {
     rewardAmount: offer.rewardAmount
   });
 
-  const code = await uniqueReferralCode();
-  const referral = await Referral.create({
-    code,
-    offer: offer._id,
-    ownerApplication: application._id,
-    offerRewardAmount: offer.rewardAmount,
-    friendReward: offer.maxSharingReward,
-    referrerEarning: offer.rewardAmount - offer.maxSharingReward
-  });
 
-  res.status(201).json({
-    success: true,
-    data: {
-      application,
-      referral: {
-        code: referral.code,
-        friendReward: referral.friendReward,
-        referrerEarning: referral.referrerEarning,
-        minSharingReward: offer.minSharingReward,
-        maxSharingReward: offer.maxSharingReward,
-        shareUrl: `${process.env.USER_SITE_URL || ''}/offer/${offer.slug}/ref/${referral.code}`
-      },
-      redirectUrl: redirectUrlFor(offer)
-    }
-  });
+
+res.status(201).json({
+  success: true,
+  data: {
+    applicationId: application._id,
+    application,
+    redirectUrl: redirectUrlFor(offer)
+  }
+});
+
+  
+
+
+
 });
 
 // GET /api/applications/track?mobile=9999999999
