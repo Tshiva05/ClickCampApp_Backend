@@ -89,4 +89,68 @@ const trackByMobile = asyncHandler(async (req, res) => {
   res.json({ success: true, data: { applications: results } });
 });
 
-module.exports = { submitDirectApplication, trackByMobile };
+
+
+const createReferral = asyncHandler(async (req, res) => {
+  const application = await Application.findById(req.params.id).populate('offer');
+
+  if (!application) {
+    throw new ApiError(404, 'Application not found');
+  }
+
+  const offer = application.offer;
+
+  const existingReferral = await Referral.findOne({
+    ownerApplication: application._id
+  });
+
+  if (existingReferral) {
+    return res.json({
+      success: true,
+      data: {
+        referral: {
+          code: existingReferral.code,
+          friendReward: existingReferral.friendReward,
+          referrerEarning: existingReferral.referrerEarning,
+          minSharingReward: offer.minSharingReward,
+          maxSharingReward: offer.maxSharingReward,
+          offerRewardAmount: offer.rewardAmount,
+          shareUrl: `${process.env.USER_SITE_URL || ''}/offer/${offer.slug}/ref/${existingReferral.code}`
+        }
+      }
+    });
+  }
+
+  const code = await uniqueReferralCode();
+
+  const referral = await Referral.create({
+    code,
+    offer: offer._id,
+    ownerApplication: application._id,
+    offerRewardAmount: offer.rewardAmount,
+    friendReward: offer.maxSharingReward,
+    referrerEarning: offer.rewardAmount - offer.maxSharingReward
+  });
+
+  res.json({
+    success: true,
+    data: {
+      referral: {
+        code: referral.code,
+        friendReward: referral.friendReward,
+        referrerEarning: referral.referrerEarning,
+        minSharingReward: offer.minSharingReward,
+        maxSharingReward: offer.maxSharingReward,
+        offerRewardAmount: offer.rewardAmount,
+        shareUrl: `${process.env.USER_SITE_URL || ''}/offer/${offer.slug}/ref/${referral.code}`
+     
+      }
+    }
+  });
+                                                                
+});     
+module.exports = {
+  submitDirectApplication,
+  trackByMobile,
+  createReferral
+};
