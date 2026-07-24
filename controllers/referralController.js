@@ -94,4 +94,60 @@ const submitViaReferral = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { getReferralByCode, updateReferralSplit, submitViaReferral };
+module.exports = {
+  getReferralByCode,
+  updateReferralSplit,
+  submitViaReferral,
+  createReferralWithoutInstall
+};
+
+const ReferralCreator = require('../models/ReferralCreator');
+
+const createReferralWithoutInstall = asyncHandler(async (req, res) => {
+  const { offerSlug, name, mobile, upi } = req.body;
+
+  const offer = await Offer.findOne({ slug: offerSlug });
+
+  if (!offer) {
+    throw new ApiError(404, 'Offer not found');
+  }
+
+  const creator = await ReferralCreator.create({
+    offerId: offer._id,
+    name,
+    mobile,
+    upi
+  });
+
+  const { friendReward, referrerEarning } = computeReferralSplit(
+    offer.rewardAmount,
+    offer.minSharingReward,
+    offer.maxSharingReward,
+    offer.minSharingReward
+  );
+
+  const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+  const referral = await Referral.create({
+    code,
+    offer: offer._id,
+    creator: creator._id,
+    friendReward,
+    referrerEarning
+  });
+
+  res.status(201).json({
+    success: true,
+    data: {
+      referral: {
+        code,
+        friendReward,
+        referrerEarning,
+        minSharingReward: offer.minSharingReward,
+        maxSharingReward: offer.maxSharingReward,
+        offerRewardAmount: offer.rewardAmount,
+        shareUrl: `${process.env.FRONTEND_URL}/ref/${code}`
+      }
+    }
+  });
+});
