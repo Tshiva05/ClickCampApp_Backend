@@ -9,6 +9,7 @@ const Referral = require('../models/Referral');
 const Application = require('../models/Application');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
+const ReferralCreator = require('../models/ReferralCreator');
 const { computeReferralSplit } = require('../utils/rewardSplit');
 
 function isLive(offer) {
@@ -94,14 +95,8 @@ const submitViaReferral = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = {
-  getReferralByCode,
-  updateReferralSplit,
-  submitViaReferral,
-  createReferralWithoutInstall
-};
 
-const ReferralCreator = require('../models/ReferralCreator');
+
 
 const createReferralWithoutInstall = asyncHandler(async (req, res) => {
   const { offerSlug, name, mobile, upi } = req.body;
@@ -149,5 +144,14 @@ const createReferralWithoutInstall = asyncHandler(async (req, res) => {
         shareUrl: `${process.env.FRONTEND_URL}/ref/${code}`
       }
     }
+
   });
-});
+  });
+        
+   
+module.exports = {
+  getReferralByCode,
+  updateReferralSplit,
+  submitViaReferral,
+  createReferralWithoutInstall
+};
