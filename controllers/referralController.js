@@ -151,6 +151,7 @@ const creator = await ReferralCreator.create({
     code,
     offer: offer._id,
     creator: creator._id,
+    offerRewardAmount: offer.rewardAmount,
     friendReward,
     referrerEarning
   });
