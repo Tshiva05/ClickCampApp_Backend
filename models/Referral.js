@@ -11,9 +11,17 @@ const referralSchema = new mongoose.Schema(
     code: { type: String, required: true, uppercase: true, trim: true },
     offer: { type: mongoose.Schema.Types.ObjectId, ref: 'Offer', required: true },
     // The original submitter's own Application - identifies who owns this link.
-    ownerApplication: { type: mongoose.Schema.Types.ObjectId, ref: 'Application', required: true },
+    
+    creator: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'ReferralCreator',
+  required: false
+},
+    
+    
+    ownerApplication: { type: mongoose.Schema.Types.ObjectId, ref: 'Application', required: false },
 
-    offerRewardAmount: { type: Number, required: true }, // snapshot of Offer.rewardAmount at creation
+    offerRewardAmount: { type: Number, required: false }, // snapshot of Offer.rewardAmount at creation
     friendReward: { type: Number, required: true },       // chosen via slider, between offer's min/max sharing reward
     referrerEarning: { type: Number, required: true }      // offerRewardAmount - friendReward
   },
@@ -22,6 +30,7 @@ const referralSchema = new mongoose.Schema(
 
 referralSchema.index({ code: 1 }, { unique: true });
 referralSchema.index({ offer: 1, createdAt: -1 });
+referralSchema.index({ creator: 1 });
 referralSchema.index({ ownerApplication: 1 });
 
 module.exports = mongoose.model('Referral', referralSchema);
