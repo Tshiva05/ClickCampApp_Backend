@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const referralCreatorSchema = new mongoose.Schema(
   {
@@ -71,7 +71,7 @@ const referralCreatorSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model(
+module.exports = mongoose.model(
   'ReferralCreator',
   referralCreatorSchema
 );
