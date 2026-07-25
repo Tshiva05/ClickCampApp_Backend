@@ -13,9 +13,12 @@ const ReferralCreator = require('../models/ReferralCreator');
 const { computeReferralSplit } = require('../utils/rewardSplit');
 
 function isLive(offer) {
-  const notExpired = !offer.expiryDate || offer.expiryDate.getTime() >= Date.now();
+  const notExpired =
+    !offer.expiryDate || offer.expiryDate.getTime() >= Date.now();
+
   return offer.isActive && notExpired;
 }
+
 
 function redirectUrlFor(offer) {
   if (offer.redirectTarget === 'playstore' && offer.playStoreUrl) return offer.playStoreUrl;
@@ -108,17 +111,7 @@ const createReferralWithoutInstall = asyncHandler(async (req, res) => {
   }
 
 
-  const creator = await ReferralCreator.create({
-  offerId: offer._id,
-  name,
-  mobile,
-  upi,
-  referralCode: code,
-  shareUrl: `${process.env.FRONTEND_URL}/offer/${offer.slug}/ref/${code}`,
-  friendReward,
-  ownerReward: referrerEarning
-});
-
+  
   
 
   const { friendReward, referrerEarning } = computeReferralSplit(
@@ -129,13 +122,27 @@ const createReferralWithoutInstall = asyncHandler(async (req, res) => {
   );
 
 
-let code;
+
+
+
+  let code;
 let exists;
 
 do {
   code = Math.random().toString(36).substring(2, 8).toUpperCase();
   exists = await Referral.findOne({ code });
 } while (exists);
+
+const creator = await ReferralCreator.create({
+  offerId: offer._id,
+  name,
+  mobile,
+  upi,
+  referralCode: code,
+  shareUrl: `${process.env.FRONTEND_URL}/offer/${offer.slug}/ref/${code}`,
+  friendReward,
+  ownerReward: referrerEarning
+});
 
 
   
