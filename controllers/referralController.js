@@ -107,12 +107,19 @@ const createReferralWithoutInstall = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Offer not found');
   }
 
+
   const creator = await ReferralCreator.create({
-    offerId: offer._id,
-    name,
-    mobile,
-    upi
-  });
+  offerId: offer._id,
+  name,
+  mobile,
+  upi,
+  referralCode: code,
+  shareUrl: `${process.env.FRONTEND_URL}/offer/${offer.slug}/ref/${code}`,
+  friendReward,
+  ownerReward: referrerEarning
+});
+
+  
 
   const { friendReward, referrerEarning } = computeReferralSplit(
     offer.rewardAmount,
@@ -121,7 +128,17 @@ const createReferralWithoutInstall = asyncHandler(async (req, res) => {
     offer.minSharingReward
   );
 
-  const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+let code;
+let exists;
+
+do {
+  code = Math.random().toString(36).substring(2, 8).toUpperCase();
+  exists = await Referral.findOne({ code });
+} while (exists);
+
+
+  
 
   const referral = await Referral.create({
     code,
@@ -141,7 +158,7 @@ const createReferralWithoutInstall = asyncHandler(async (req, res) => {
         minSharingReward: offer.minSharingReward,
         maxSharingReward: offer.maxSharingReward,
         offerRewardAmount: offer.rewardAmount,
-        shareUrl: `${process.env.FRONTEND_URL}/ref/${code}`
+        shareUrl: `${process.env.FRONTEND_URL}/offer/${offer.slug}/ref/${code}`
       }
     }
 
