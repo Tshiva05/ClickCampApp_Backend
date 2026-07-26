@@ -35,6 +35,8 @@ async function uniqueReferralCode() {
 // Application, then auto-generates a shareable Referral for this
 // submitter at the offer's default (max) sharing reward.
 const submitDirectApplication = asyncHandler(async (req, res) => {
+  console.log("submitDirectApplication called");
+  
   const offer = await Offer.findOne({ slug: req.params.slug });
   if (!offer || !isLive(offer)) throw new ApiError(404, 'Offer not found or no longer active');
 
@@ -92,6 +94,8 @@ const trackByMobile = asyncHandler(async (req, res) => {
 
 
 const createReferral = asyncHandler(async (req, res) => {
+console.log("createReferral called");
+  
   const application = await Application.findById(req.params.id).populate('offer');
 
   if (!application) {
