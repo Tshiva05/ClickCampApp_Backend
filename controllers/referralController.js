@@ -169,14 +169,14 @@ const creator = await ReferralCreator.create({
     success: true,
     data: {
       referral: {
-        code,
-        friendReward,
-        referrerEarning,
-        minSharingReward: offer.minSharingReward,
-        maxSharingReward: offer.maxSharingReward,
-        offerRewardAmount: offer.rewardAmount,
-        shareUrl: `${process.env.FRONTEND_URL}/offer/${offer.slug}/ref/${code}`
-      }
+  code,
+  friendReward: newFriendReward,
+  referrerEarning,
+  minSharingReward: offer.minSharingReward,
+  maxSharingReward: offer.maxSharingReward,
+  offerRewardAmount: offer.rewardAmount,
+  shareUrl: `${process.env.FRONTEND_URL}/offer/${offer.slug}/ref/${code}`
+  }
     }
 
   });
