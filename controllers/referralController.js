@@ -5,7 +5,7 @@
 // the referrer adjust their split and let friends view/apply through
 // the link - friends never see reward-editing controls.
 const Offer = require('../models/Offer');
-const Referral = require('../models/Referral');
+const Referral  = require('../models/Referral');
 const Application = require('../models/Application');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
@@ -58,13 +58,17 @@ const updateReferralSplit = asyncHandler(async (req, res) => {
   if (!referral) throw new ApiError(404, 'Referral link not found');
 
   const { friendReward } = req.body;
-  const { offer } = referral;
-  const { friendReward: newFriendReward, referrerEarning } = computeReferralSplit(
-    offer.rewardAmount,
-    offer.minSharingReward,
-    offer.maxSharingReward,
-    friendReward
-  );
+const { offer } = referral;
+
+const {
+  friendReward: newFriendReward,
+  referrerEarning
+} = computeReferralSplit(
+  offer.rewardAmount,
+  offer.minSharingReward,
+  offer.maxSharingReward,
+  friendReward
+);
 
   referral.friendReward = newFriendReward;
   referral.referrerEarning = referrerEarning;
@@ -102,7 +106,14 @@ const submitViaReferral = asyncHandler(async (req, res) => {
 
 
 const createReferralWithoutInstall = asyncHandler(async (req, res) => {
-  const { offerSlug, name, mobile, upi } = req.body;
+
+  const {
+  offerSlug,
+  name,
+  mobile,
+  upi,
+  friendReward
+} = req.body;
 
   const offer = await Offer.findOne({ slug: offerSlug });
 
@@ -113,15 +124,13 @@ const createReferralWithoutInstall = asyncHandler(async (req, res) => {
 
   
   
-
-  const { friendReward, referrerEarning } = computeReferralSplit(
-    offer.rewardAmount,
-    offer.minSharingReward,
-    offer.maxSharingReward,
-    offer.minSharingReward
-  );
-
-
+const { friendReward: newFriendReward, referrerEarning } = computeReferralSplit(
+  offer.rewardAmount,
+  offer.minSharingReward,
+  offer.maxSharingReward,
+  friendReward
+);
+  
 
 
 
@@ -140,7 +149,7 @@ const creator = await ReferralCreator.create({
   upi,
   referralCode: code,
   shareUrl: `${process.env.FRONTEND_URL}/offer/${offer.slug}/ref/${code}`,
-  friendReward,
+  friendReward : newFriendReward,
   ownerReward: referrerEarning
 });
 
@@ -152,7 +161,7 @@ const creator = await ReferralCreator.create({
     offer: offer._id,
     creator: creator._id,
     offerRewardAmount: offer.rewardAmount,
-    friendReward,
+    friendReward: newFriendReward,
     referrerEarning
   });
 
