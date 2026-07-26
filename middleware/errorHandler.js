@@ -14,12 +14,24 @@ function errorHandler(err, req, res, next) {
     statusCode = 400;
     message = Object.values(err.errors).map((e) => e.message).join(', ');
   }
-  // Mongoose duplicate key error -> 409
-  if (err.code === 11000) {
-    statusCode = 409;
-    const field = Object.keys(err.keyPattern || {})[0] || 'field';
-    message = `A record with that ${field} already exists`;
-  }
+
+
+
+
+// Mongoose duplicate key error -> 409
+if (err.code === 11000) {
+  console.log("========== DUPLICATE KEY ==========");
+  console.log("keyPattern:", err.keyPattern);
+  console.log("keyValue:", err.keyValue);
+  console.log("full error:", err);
+  console.log("==================================");
+
+  statusCode = 409;
+  const field = Object.keys(err.keyPattern || {})[0] || "field";
+  message = `A record with that ${field} already exists`;
+}
+
+  
   // Malformed ObjectId -> 400 instead of a raw 500
   if (err.name === 'CastError') {
     statusCode = 400;
