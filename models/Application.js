@@ -44,12 +44,7 @@ friendReward: {
   default: 0
 },
 
-generatedReferralCode: {
-  type: String,
-  default: null,
-  unique: true,
-  sparse: true
-},
+
 
 // Set only if this application came in through someone else's referral link.
 referral: {
