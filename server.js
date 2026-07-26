@@ -1,4 +1,7 @@
 // server.js
+
+console.log("Backend version: July 26 - TEST");
+
 require('dotenv').config();
 
 const express = require('express');
